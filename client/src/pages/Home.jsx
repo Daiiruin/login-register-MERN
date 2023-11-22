@@ -16,7 +16,7 @@ export const Home = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-          // Mettre à jour l'état avec les détails de l'utilisateur
+          // Update status with user details
           setUserData(response.data);
         } catch (error) {
           console.error(error);
@@ -28,10 +28,8 @@ export const Home = () => {
   }, []);
 
   const handleLogout = () => {
-    // Supprimer le token du stockage local
-    localStorage.removeItem("token");
+    // Delete the token from local storage    localStorage.removeItem("token");
     console.log("You are now logged out");
-    // Rediriger l'utilisateur vers la page de connexion
     navigate("/login");
   };
 

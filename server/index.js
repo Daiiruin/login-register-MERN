@@ -48,7 +48,6 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/user", verifyToken, (req, res) => {
-  // Utilise req.user pour obtenir les détails de l'utilisateur
   const userId = req.user.userId;
 
   UserModel.findById(userId)
@@ -56,7 +55,7 @@ app.get("/user", verifyToken, (req, res) => {
       res.json({
         name: user.name,
         email: user.email,
-        // Ajoute d'autres détails selon les besoins
+        // Add other details as needed
       });
     })
     .catch(err => res.json(err));
