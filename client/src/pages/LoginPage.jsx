@@ -15,7 +15,9 @@ export const LoginPage = () => {
       .post("http://localhost:5000/login", { email, password })
       .then((res) => {
         console.log(res);
-        if (res.data === "Success") {
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+          console.log("Your token", res.data.token);
           navigate("/home");
         }
       })

@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const UserModel = require('./models/Users');
 
+const jwt = require('jsonwebtoken');
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -15,21 +17,49 @@ app.post("/register", (req, res) => {
     .catch(err => res.json(err));
 });
 
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization;
+  if (!token) return res.status(403).json({ message: "Token not provided" });
+
+  jwt.verify(token.split(" ")[1], 'your_secret_key', (err, user) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+
+    req.user = user;
+    next();
+  });
+};
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   UserModel.findOne({ email: email })
     .then(user => {
       if (user) {
         if (user.password === password) {
-          res.json("Success");
+          const token = jwt.sign({ userId: user._id, email: user.email }, 'your_secret_key');
+          res.json({ token });
         } else {
           res.json("Incorrect Password");
         }
       } else {
         res.json("User not found");
       }
-    }
-    )
+    })
+    .catch(err => res.json(err));
+});
+
+app.get("/user", verifyToken, (req, res) => {
+  // Utilise req.user pour obtenir les détails de l'utilisateur
+  const userId = req.user.userId;
+
+  UserModel.findById(userId)
+    .then(user => {
+      res.json({
+        name: user.name,
+        email: user.email,
+        // Ajoute d'autres détails selon les besoins
+      });
+    })
+    .catch(err => res.json(err));
 });
 
 app.listen(5000, () => {
