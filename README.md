@@ -1,4 +1,4 @@
-# React User Management App (MongoDB, Nodejs, ExpressJS)
+# React Login Register (MongoDB, Nodejs, ExpressJS)
 
 Hello ! Here is a simple MERN (MongoDB, ExpressJS, ReactJS, NodeJS) stack application for user registration, login, and authentication using JSON Web Tokens (JWT).
 
