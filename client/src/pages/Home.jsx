@@ -16,7 +16,6 @@ export const Home = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-          // Update status with user details
           setUserData(response.data);
         } catch (error) {
           console.error(error);
@@ -28,8 +27,9 @@ export const Home = () => {
   }, []);
 
   const handleLogout = () => {
-    // Delete the token from local storage    localStorage.removeItem("token");
-    console.log("You are now logged out");
+    localStorage.removeItem("token");
+    setUserData({});
+    console.log("You have been logged out");
     navigate("/login");
   };
 
@@ -37,7 +37,7 @@ export const Home = () => {
     <div>
       <p>Votre nom : {userData.name}</p>
       <p>Votre mail : {userData.email}</p>{" "}
-      <button onClick={handleLogout}>Déconnexion</button>
+      <button onClick={handleLogout}>Log Out</button>
     </div>
   );
 };
