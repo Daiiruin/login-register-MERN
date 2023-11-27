@@ -17,6 +17,7 @@ Hello ! Here is a simple MERN (MongoDB, ExpressJS, ReactJS, NodeJS) stack applic
 - Register a new user with a username, email, and password.
 - Login with email and password.
 - Authenticate users using JSON Web Tokens (JWT).
+- Protected routes.
 - Secure password storage using encryption. (Will be added soon)
 - User logout.
 
