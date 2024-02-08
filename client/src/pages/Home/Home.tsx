@@ -1,9 +1,14 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+interface UserData {
+  name?: string;
+  email?: string;
+}
 
 export const Home = () => {
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState<UserData>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +42,7 @@ export const Home = () => {
     <div>
       <p>Votre nom : {userData.name}</p>
       <p>Votre mail : {userData.email}</p>{" "}
+      <Link to="/updateProfile">Update Profile</Link>
       <button onClick={handleLogout}>Log Out</button>
     </div>
   );

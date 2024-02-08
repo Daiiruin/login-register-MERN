@@ -89,3 +89,23 @@ app.get("/user", verifyToken, (req, res) => {
 app.listen(5000, () => {
   console.log('Server has started!');
 });
+
+app.patch("/user/update", verifyToken, async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const updates = req.body;
+
+    const user = await UserModel.findByIdAndUpdate(userId, updates, { new: true });
+
+    if (user) {
+      const { password, ...userDataWithoutPassword } = user.toObject();
+      res.json(userDataWithoutPassword);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
