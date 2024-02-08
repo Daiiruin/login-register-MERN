@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const UserModel = require('./models/Users');
+const bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
 
@@ -19,7 +20,13 @@ app.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    const newUser = await UserModel.create(req.body);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    const newUser = await UserModel.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: hashedPassword // Enregistrer le mot de passe crypté
+    });
     res.json(newUser);
   } catch (err) {
     console.error(err);
@@ -43,16 +50,21 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   UserModel.findOne({ email: email })
     .then(user => {
-      if (user) {
-        if (user.password === password) {
-          const token = jwt.sign({ userId: user._id, email: user.email }, 'your_secret_key');
+      if (!user) {
+        return res.status(404).json("User not found");
+      }
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json("Internal server error");
+        }
+        if (isMatch) {
+          const token = jwt.sign({ userId: user._id, email: user.email }, 'your_secret_key', { expiresIn: '1h' }); // Ajouter une expiration au token pour plus de sécurité
           res.json({ token });
         } else {
           res.status(400).json("Incorrect Password");
         }
-      } else {
-        res.status(404).json("User not found");
-      }
+      });
     })
     .catch(err => {
       console.error(err);
