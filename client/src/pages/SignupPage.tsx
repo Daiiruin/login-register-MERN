@@ -13,6 +13,11 @@ export const SignupPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError("All fields are required.");
+      return; // Stop l'exécution si un champ est vide
+    }
+
     axios
       .post("http://localhost:5000/register", { name, email, password })
       .then((res) => {
