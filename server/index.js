@@ -11,10 +11,20 @@ app.use(cors());
 
 mongoose.connect('mongodb://127.0.0.1:27017/lr-mongo');
 
-app.post("/register", (req, res) => {
-  UserModel.create(req.body)
-    .then(user => res.json(user))
-    .catch(err => res.json(err));
+app.post("/register", async (req, res) => {
+  try {
+    const existingUser = await UserModel.findOne({ email: req.body.email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const newUser = await UserModel.create(req.body);
+    res.json(newUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 const verifyToken = (req, res, next) => {
@@ -38,13 +48,16 @@ app.post("/login", (req, res) => {
           const token = jwt.sign({ userId: user._id, email: user.email }, 'your_secret_key');
           res.json({ token });
         } else {
-          res.json("Incorrect Password");
+          res.status(400).json("Incorrect Password");
         }
       } else {
-        res.json("User not found");
+        res.status(404).json("User not found");
       }
     })
-    .catch(err => res.json(err));
+    .catch(err => {
+      console.error(err);
+      res.status(500).json("Internal server error");
+    });
 });
 
 app.get("/user", verifyToken, (req, res) => {
